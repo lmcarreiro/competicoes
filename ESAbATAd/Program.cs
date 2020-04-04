@@ -51,50 +51,11 @@ namespace ESAbATAd
                         }
                         else if (posEq != null ^ posDiff != null)
                         {
-                            int posRepeated = posEq.HasValue ? posEq.Value : posDiff.Value;
-                            var repeated = ReadRepeated(array, posRepeated);
-                            questionsAsked += 1;
-                            if (repeated != array[posRepeated])
-                            {
-                                Complement(array);
-                            }
-
-                            i--;
+                            DetectAndReflect(array, ref i, ref questionsAsked, ref posEq, ref posDiff, ref endFilledSize);
                         }
                         else if (posEq != null && posDiff != null)
                         {
-                            var repeatedEq = ReadRepeated(array, posEq.Value);
-                            var repeatedDiff = ReadRepeated(array, posDiff.Value);
-                            questionsAsked += 2;
-
-                            if (repeatedEq == array[posEq.Value] && repeatedDiff == array[posDiff.Value])
-                            {
-                                // nada
-                            }
-                            else if (repeatedEq == array[posEq.Value] && repeatedDiff != array[posDiff.Value])
-                            {
-                                Reverse(array);
-                                
-                                var temp = i;
-                                i = endFilledSize.Value + 1;
-                                endFilledSize = temp - 1;
-                            }
-                            else if (repeatedEq != array[posEq.Value] && repeatedDiff == array[posDiff.Value])
-                            {
-                                Complement(array);
-                                Reverse(array);
-                                
-                                var temp = i;
-                                i = endFilledSize.Value + 1;
-                                endFilledSize = temp - 1;
-                            }
-                            else if (repeatedEq != array[posEq.Value] && repeatedDiff != array[posDiff.Value])
-                            {
-                                Complement(array);
-                            }
-                            else throw new InvalidOperationException();
-
-                            i--;
+                            DetectAndReflect(array, ref i, ref questionsAsked, ref posEq, ref posDiff, ref endFilledSize);
                         }
                         else throw new InvalidOperationException();
                     }
@@ -131,6 +92,57 @@ namespace ESAbATAd
             }
 
             return string.Join("", array.Select(b => b.Value ? '1' : '0'));
+        }
+
+        static void DetectAndReflect(bool?[] array, ref int i, ref int questionsAsked, ref int? posEq, ref int? posDiff, ref int? endFilledSize)
+        {
+            if (posEq != null ^ posDiff != null)
+            {
+                int posRepeated = posEq.HasValue ? posEq.Value : posDiff.Value;
+                var repeated = ReadRepeated(array, posRepeated);
+                questionsAsked += 1;
+                if (repeated != array[posRepeated])
+                {
+                    Complement(array);
+                }
+
+                i--;
+            }
+            else if (posEq != null && posDiff != null)
+            {
+                var repeatedEq = ReadRepeated(array, posEq.Value);
+                var repeatedDiff = ReadRepeated(array, posDiff.Value);
+                questionsAsked += 2;
+
+                if (repeatedEq == array[posEq.Value] && repeatedDiff == array[posDiff.Value])
+                {
+                    // nada
+                }
+                else if (repeatedEq == array[posEq.Value] && repeatedDiff != array[posDiff.Value])
+                {
+                    Reverse(array);
+
+                    var temp = i;
+                    i = endFilledSize.Value + 1;
+                    endFilledSize = temp - 1;
+                }
+                else if (repeatedEq != array[posEq.Value] && repeatedDiff == array[posDiff.Value])
+                {
+                    Complement(array);
+                    Reverse(array);
+
+                    var temp = i;
+                    i = endFilledSize.Value + 1;
+                    endFilledSize = temp - 1;
+                }
+                else if (repeatedEq != array[posEq.Value] && repeatedDiff != array[posDiff.Value])
+                {
+                    Complement(array);
+                }
+                else throw new InvalidOperationException();
+
+                i--;
+            }
         }
 
         private static void Complement(bool?[] array)
