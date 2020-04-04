@@ -29,7 +29,7 @@ namespace ESAbATAd
             {
                 ReadFirst10(array);
             }
-            else if (B == 20)
+            else if (B == 20 || B == 100)
             {
                 int? posEq = null;
                 int? posDiff = null;
@@ -63,13 +63,23 @@ namespace ESAbATAd
                     {
                         if (posEq == null || posDiff == null)
                         {
-                            ReadSymmetric(array, B, i, ref posEq, ref posDiff);
-                            questionsAsked += 2;
-                            bitsRead += 2;
-
-                            if (posEq.HasValue == posDiff.HasValue)
+                            if (((questionsAsked + 1) % 10) == 0)
                             {
-                                endFilledSize = i;
+                                var trash = ReadRepeated(array, 0);
+                                questionsAsked += 1;
+                                i--;
+                                // TODO: if fails, put DetectAndReflect between ReadSymmetric here
+                            }
+                            else
+                            {
+                                ReadSymmetric(array, B, i, ref posEq, ref posDiff);
+                                questionsAsked += 2;
+                                bitsRead += 2;
+
+                                if (posEq.HasValue == posDiff.HasValue)
+                                {
+                                    endFilledSize = i;
+                                }
                             }
                         }
                         else
@@ -85,10 +95,6 @@ namespace ESAbATAd
                         break;
                     }
                 }
-            }
-            else if (B == 100)
-            {
-                throw new NotImplementedException();
             }
 
             return string.Join("", array.Select(b => b.Value ? '1' : '0'));
